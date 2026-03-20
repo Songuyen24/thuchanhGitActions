@@ -13,7 +13,7 @@ services:
       - sql_data:/var/opt/mssql
 
   web:
-    image: dan3li0n/dan3li0n:latest
+    image: dan3li0n/demo-app:latest
     container_name: my_web_app
     ports:
       - "8080:8080"
