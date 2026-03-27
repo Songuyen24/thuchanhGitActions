@@ -1,10 +1,10 @@
-package com.example.Buoi3;
+package com.example.NguyenPhucSon;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Buoi3ApplicationTests {
+class NguyenPhucSonApplicationTests {
 
 	@Test
 	void contextLoads() {
