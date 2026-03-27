@@ -1,27 +1,21 @@
-# ----- Giai đoạn 1: Build -----
-FROM maven:3.9.11-eclipse-temurin-21 AS builder
-WORKDIR /app
+FROM mcr.microsoft.com/mssql/server:2022-latest
 
-# Chỉ copy file pom.xml vào trước để tải thư viện
-COPY pom.xml .
-# Tải toàn bộ thư viện (bước này sẽ được Docker lưu cache nếu pom.xml không đổi)
-RUN mvn dependency:go-offline -B
+# Chuyển sang root để cài đặt
+USER root
 
-# Copy thư mục source code vào sau
-COPY src ./src
-# Biên dịch code thành file .jar
-RUN mvn package -DskipTests
+# Tạo thư mục chứa script khởi tạo
+RUN mkdir -p /docker-entrypoint-initdb.d
 
-# ----- Giai đoạn 2: Chạy -----
-# Sử dụng alpine thay vì jammy để kích thước image nhỏ nhất có thể
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
+# Sao chép script khởi tạo DB (nếu có)
+# COPY init.sql /docker-entrypoint-initdb.d/
 
-# Chỉ lấy file .jar từ builder (GĐ1)
-COPY --from=builder /app/target/*.jar app.jar
+# Biến môi trường mặc định
+ENV SA_PASSWORD="YourStrong@123"
+ENV ACCEPT_EULA="Y"
+ENV MSSQL_PID="Express"
 
-# Khai báo cổng ứng dụng (Đảm bảo CONTAINER_PORT trong GitHub Actions cũng là 8080)
-EXPOSE 8080
+# Expose cổng SQL Server
+EXPOSE 1433
 
-# Lệnh chạy ứng dụng
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Quay lại user mssql
+USER mssql
